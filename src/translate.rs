@@ -127,6 +127,7 @@ pub enum Expr {
 	LiteralExpr(String,bool),
 	CharSetExpr(bool, Vec<CharSetCase>),
 	RuleExpr(String),
+	RegexExpr(String),
 	SequenceExpr(Vec<Spanned<Expr>>),
 	ChoiceExpr(Vec<Spanned<Expr>>),
 	OptionalExpr(Box<Spanned<Expr>>),
@@ -608,6 +609,21 @@ fn compile_expr(compiler: &mut PegCompiler, cx: Context, e: &Spanned<Expr>) -> T
 				);
 				quote!()
 			}
+		}
+
+		RegexExpr(ref regex_str) => {
+			let regex_str = "^(?:".to_string() + regex_str + ")";
+			quote! {{
+				let regex = Regex::new(#regex_str).unwrap();
+				println!("{} -- {:?}", __input, regex.as_str());
+				match regex.find(__input) {
+					Some(mat) => {
+						let s = mat.as_str();
+						Matched(s.len(), s)
+					},
+					None => Failed
+				}
+			}}
 		}
 
 		TemplateInvoke(ref name, ref params) => {

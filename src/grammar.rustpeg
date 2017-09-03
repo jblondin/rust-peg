@@ -155,6 +155,7 @@ primary -> Spanned<Expr>
       TemplateInvoke(name, args)
     }
   / literal
+  / regex:regexString { RegexExpr(regex) }
   / class
   / "." { AnyCharExpr }
   / "#position" { PositionExpr }
@@ -207,6 +208,12 @@ literal -> Expr
   = value:(doubleQuotedString / singleQuotedString) case_insensitive:"i"? {
       LiteralExpr(value,case_insensitive.is_some())
     }
+
+regexString -> String
+  = string:"@\"" s:regexCharacter* "\"@" _ { s.into_iter().collect() }
+
+regexCharacter -> char
+  = !("\"@") c:$. { c.chars().next().unwrap() }
 
 string -> String
   = string:(doubleQuotedString / singleQuotedString) { string }
