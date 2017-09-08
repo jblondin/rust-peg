@@ -163,6 +163,7 @@ primary -> Spanned<Expr>
   / "#expected" _ "(" _ s:doubleQuotedString _ ")" { FailExpr(s) }
   / "#infix" _ "<" _ atom:expression _ ">" _ "{" _ levels:infix_level++_ _ "}"
         { InfixExpr{ atom: Box::new(atom), levels:levels }}
+  / "#ext" _ "<" name:identifier ">" { ExtExpr(name) }
   / "(" _ expression:expression _ ")" { expression.node }
   >
 

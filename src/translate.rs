@@ -5,6 +5,12 @@ pub use self::Expr::*;
 use codemap::Spanned;
 use PegCompiler;
 
+#[derive(Clone)]
+pub enum ExtResult<T> {
+	Matched(usize, T),
+	Failed
+}
+
 fn raw(s: &str) -> Tokens {
 	let mut t = Tokens::new();
 	t.append(s);
@@ -128,6 +134,7 @@ pub enum Expr {
 	CharSetExpr(bool, Vec<CharSetCase>),
 	RuleExpr(String),
 	RegexExpr(String),
+	ExtExpr(String),
 	SequenceExpr(Vec<Spanned<Expr>>),
 	ChoiceExpr(Vec<Spanned<Expr>>),
 	OptionalExpr(Box<Spanned<Expr>>),
@@ -622,6 +629,16 @@ fn compile_expr(compiler: &mut PegCompiler, cx: Context, e: &Spanned<Expr>) -> T
 						Matched(s.len(), s)
 					},
 					None => Failed
+				}
+			}}
+		}
+
+		ExtExpr(ref name) => {
+			let extra_args_call = cx.grammar.extra_args_call();
+			quote! {{
+				match #name(__input, __state, __pos #extra_args_call) {
+					ExtResult::Matched(ref pos, ref ret) => Matched(pos, ref),
+					ExtResult::Failed => Failed
 				}
 			}}
 		}
