@@ -621,12 +621,14 @@ fn compile_expr(compiler: &mut PegCompiler, cx: Context, e: &Spanned<Expr>) -> T
 		RegexExpr(ref regex_str) => {
 			let regex_str = "^(?:".to_string() + regex_str + ")";
 			quote! {{
-				let regex = Regex::new(#regex_str).unwrap();
-				println!("{} -- {:?}", __input, regex.as_str());
-				match regex.find(__input) {
-					Some(mat) => {
-						let s = mat.as_str();
-						Matched(s.len(), s)
+				let regex = match Regex::new(#regex_str) {
+					Ok(regex) => regex,
+					Err(_) => { return Failed; },
+				};
+				match regex.captures(&__input[__pos..]) {
+					Some(caps) => {
+						let whole_mat = caps.get(0).unwrap(); // 0th capture always exists
+						Matched(__pos + whole_mat.as_str().len(), caps)
 					},
 					None => Failed
 				}
