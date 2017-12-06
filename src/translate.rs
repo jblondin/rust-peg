@@ -5,12 +5,6 @@ pub use self::Expr::*;
 use codemap::Spanned;
 use PegCompiler;
 
-#[derive(Clone)]
-pub enum ExtResult<T> {
-	Matched(usize, T),
-	Failed
-}
-
 fn raw(s: &str) -> Tokens {
 	let mut t = Tokens::new();
 	t.append(s);
@@ -432,6 +426,7 @@ fn compile_rule(compiler: &mut PegCompiler, grammar: &Grammar, rule: &Rule) -> T
 
 fn compile_rule_export(grammar: &Grammar, rule: &Rule) -> Tokens {
 	let name = raw(&rule.name);
+	let ext_name = raw(&format!("{}_ext", rule.name));
 	let ret_ty = raw(&rule.ret_type);
 	let parse_fn = raw(&format!("__parse_{}", rule.name));
 	let nl = raw("\n\n"); // make output slightly more readable
@@ -467,6 +462,17 @@ fn compile_rule_export(grammar: &Grammar, rule: &Rule) -> Tokens {
 				offset: __err_pos,
 				expected: __state.expected,
 			})
+		}
+
+		#nl
+		pub fn #ext_name<'input>(__input: &'input str, __pos: usize #extra_args_def)
+				-> Option<(usize, #ret_ty)> {
+			#![allow(non_snake_case, unused)]
+			let mut __state = ParseState::new();
+			match #parse_fn(__input, &mut __state, __pos #extra_args_call) {
+				Matched(__newpos, __value) => Some((__newpos, __value)),
+				Failed => None
+			}
 		}
 	}
 }
@@ -636,11 +642,11 @@ fn compile_expr(compiler: &mut PegCompiler, cx: Context, e: &Spanned<Expr>) -> T
 		}
 
 		ExtExpr(ref name) => {
-			let extra_args_call = cx.grammar.extra_args_call();
+			let ext_name = raw(&format!("{}_ext", name));
 			quote! {{
-				match #name(__input, __state, __pos #extra_args_call) {
-					ExtResult::Matched(ref pos, ref ret) => Matched(pos, ref),
-					ExtResult::Failed => Failed
+				match #ext_name(&__input, __pos) {
+					Some((newpos, ret)) => Matched(newpos, ret),
+					None => Failed
 				}
 			}}
 		}
