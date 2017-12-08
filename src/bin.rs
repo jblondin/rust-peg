@@ -1,4 +1,4 @@
-extern crate peg;
+extern crate wee_peg as peg;
 
 use std::env;
 use std::fs::File;

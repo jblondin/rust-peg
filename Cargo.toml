@@ -2,12 +2,12 @@
 members = ["./peg-syntax-ext", "./peg-tests"]
 
 [package]
-name = "peg"
+name = "wee-peg"
 version = "0.5.4"
-authors = [ "Kevin Mehall <km@kevinmehall.net>" ]
+authors = [ "Kevin Mehall <km@kevinmehall.net>", "Jamie Blondin <jblondin@gmail.com>" ]
 license = "MIT"
-repository = "https://github.com/kevinmehall/rust-peg"
-documentation = "https://github.com/kevinmehall/rust-peg/blob/master/README.md#readme"
+repository = "https://github.com/jblondin/rust-peg"
+documentation = "https://github.com/jblondin/rust-peg/blob/master/README.md#readme"
 description = "A simple Parsing Expression Grammar (PEG) parser generator."
 keywords = ["peg", "parser", "parsing", "grammar"]
 categories = ["parsing"]

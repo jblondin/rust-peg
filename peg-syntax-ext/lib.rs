@@ -3,7 +3,7 @@ extern crate rustc_plugin;
 #[macro_use] pub extern crate syntax;
 extern crate rustc_errors as errors;
 
-extern crate peg;
+extern crate wee_peg as peg;
 
 use syntax::ast;
 use syntax::codemap;

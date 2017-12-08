@@ -11,7 +11,7 @@ This crate provides the syntax extension plugin for use with Rust nightly.
 """
 
 [dependencies]
-peg = { version = "0.5", path = "../" }
+wee-peg = { version = "0.5", path = "../" }
 regex = "0.2"
 
 [lib]
