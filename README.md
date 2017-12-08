@@ -1,8 +1,14 @@
 # Parsing Expression Grammars in Rust
 
+[![Build Status](https://travis-ci.org/jblondin/rust-peg.svg?branch=master)](https://travis-ci.org/jblondin/rust-peg)
+
 This is a simple parser generator based on [Parsing Expression Grammars](https://en.wikipedia.org/wiki/Parsing_expression_grammar).
 
 Please see the [release notes](https://github.com/kevinmehall/rust-peg/releases) for updates.
+
+## This fork
+
+This is an experimental fork to provide some extra functionality to be used with [sindra](https://github.com/jblondin/sindra) and associated programming langauges (e.g. [piske](https://github.com/jblondin/piske)). These features may not have been tested as well as the upstream functionality.
 
 ## Grammar Definition Syntax
 
